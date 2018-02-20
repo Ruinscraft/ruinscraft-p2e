@@ -1,0 +1,4 @@
+main: com.ruinscraft.p2e.P2Extensions
+name: ${name}
+version: ${project.version}
+commands:
