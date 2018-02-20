@@ -90,6 +90,7 @@ public class MenuHandler implements Listener {
 		}
 
 		return result;
+		
 	}
 	
 	public String getFormattedTime(Player player) {
@@ -103,6 +104,7 @@ public class MenuHandler implements Listener {
 					.toHours(TimeUnit.MILLISECONDS.toDays(result)), TimeUnit.MILLISECONDS.toMinutes(result) - TimeUnit.HOURS
 					.toMinutes(TimeUnit.MILLISECONDS.toHours(result)), TimeUnit.MILLISECONDS.toSeconds(result) - TimeUnit.MINUTES
 					.toSeconds(TimeUnit.MILLISECONDS.toMinutes(result)));
+		
 	}
 	
 	public void updateUsers() {
@@ -168,24 +170,25 @@ public class MenuHandler implements Listener {
 		final Player player = (Player) event.getPlayer();
 		Inventory inventory = event.getInventory();
 
-		if (inventory.getName().equals(this.getRewardsMenu(player).getInventory().getName()))
-		{
+		if (inventory.getName().equals(this.getRewardsMenu(player).getInventory().getName())) {
+			
 			final RewardsMenu rewardsMenu = this.getRewardsMenu(player);
 			runningTasks.add(player.getUniqueId());
 			final P2Extensions instance = P2Extensions.getInstance();
 
-			new BukkitRunnable()
-			{
-				public void run()
-				{
-					if (player.isOnline() && runningTasks.contains(player.getUniqueId()))
-					{
+			new BukkitRunnable() {
+				
+				public void run() {
+					if (player.isOnline() && runningTasks.contains(player.getUniqueId())) {
 						rewardsMenu.update(player);
 					}
 					else cancel();
 				}
+				
 			}.runTaskTimerAsynchronously(instance, 0L, 20L);
+			
 		}
+		
 	}
 
 	@EventHandler 
@@ -193,9 +196,9 @@ public class MenuHandler implements Listener {
 		
 		Player player = (Player) event.getPlayer();
 
-		if (runningTasks.contains(player.getUniqueId()))
-		{
+		if (runningTasks.contains(player.getUniqueId())) {
 			runningTasks.remove(player.getUniqueId());
 		}
+		
 	}
 }

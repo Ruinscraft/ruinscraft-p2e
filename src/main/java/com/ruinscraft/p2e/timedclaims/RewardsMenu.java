@@ -31,7 +31,7 @@ public class RewardsMenu {
 		String path = "menus.rewards.reward-items";
 
 		this.size = config.getInt("menus.rewards.size");
-		this.title = P2Util.colour(config.getString("menus.rewards.title"));
+		this.title = P2Util.color(config.getString("menus.rewards.title"));
 		this.inventory = Bukkit.createInventory(null, size, title);
 		
 		try {
@@ -52,7 +52,7 @@ public class RewardsMenu {
 				}
 
 				ItemMeta itemMeta = itemStack.getItemMeta();
-				itemMeta.setDisplayName(P2Util.colour(config.getString(ipath + ".name")));
+				itemMeta.setDisplayName(P2Util.color(config.getString(ipath + ".name")));
 
 				ArrayList<String> lore = new ArrayList<String>();
 
@@ -61,7 +61,7 @@ public class RewardsMenu {
 					String time = TimedClaimsExtension.getMenuHandler().getFormattedTime(player);
 					long result = TimedClaimsExtension.getMenuHandler().getTime(player);
 
-					lore.add(P2Util.colour(line.replace("{time}", time)
+					lore.add(P2Util.color(line.replace("{time}", time)
 							.replace("{days}", Long.toString(TimeUnit.MILLISECONDS.toDays(result)))
 							.replace("{hours}", Long.toString(TimeUnit.MILLISECONDS.toHours(result) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS
 									.toDays(result))))
@@ -107,11 +107,8 @@ public class RewardsMenu {
 				
 			}
 			
-		} catch (NullPointerException e) {
-			P2Util.log("[Error] A NullPointerException occurred when creating the Rewards Menu for " + player.getName() + ":");
-			e.printStackTrace();
 		} catch (Exception e) {
-			P2Util.log("[Error] An unknown exception occurred when creating the Rewards Menu for " + player.getName() + ":");
+			P2Util.log("An unknown exception occurred when creating the Rewards Menu for " + player.getName() + ":");
 			e.printStackTrace();
 		}
 
@@ -154,7 +151,7 @@ public class RewardsMenu {
 
 			for (String line : config.getStringList(ipath + ".lore")) {
 
-				lore.add(P2Util.colour(line.replace("{time}", time)
+				lore.add(P2Util.color(line.replace("{time}", time)
 						.replace("{plotssofar}", Integer.toString(delay))
 						.replace("{all}", Integer.toString(allowed))
 						.replace("{unclaimed}", Integer.toString(unclaimed))

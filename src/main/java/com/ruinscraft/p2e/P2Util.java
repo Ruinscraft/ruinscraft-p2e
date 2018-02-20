@@ -35,14 +35,18 @@ public class P2Util {
 	}
 
 	public static void messagePlayer(Player player, String msg) {
-		player.sendMessage(P2Util.colour(msg));
+		player.sendMessage(P2Util.color(msg));
 	}
 
 	public static void log(String msg) { 
 		logger.info(msg);
 	}
+	
+	public static void warning(String msg) { 
+		logger.warning(msg);
+	}
 
-	public static String colour(String msg) {
+	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
 

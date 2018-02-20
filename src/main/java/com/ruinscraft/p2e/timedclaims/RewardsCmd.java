@@ -11,16 +11,14 @@ import com.ruinscraft.p2e.P2Util;
 
 public class RewardsCmd implements CommandExecutor {
 
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
-	{
-		if (sender instanceof Player)
-		{
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		
+		if (sender instanceof Player) {
+			
 			Player player = (Player) sender;
 
 			if (label.equalsIgnoreCase("rewards") || label.equalsIgnoreCase("nextclaim")) {
-				
 				TimedClaimsExtension.getMenuHandler().openRewardsMenu(player);
-				
 			} else {
 				
 				if (args.length >= 1) {
@@ -55,36 +53,37 @@ public class RewardsCmd implements CommandExecutor {
 			
 		} else if (sender instanceof ConsoleCommandSender) {
 			
-			if (args.length >= 3)
-			{
-				if (args[0].equalsIgnoreCase("message") || args[0].equalsIgnoreCase("msg"))
-				{
+			if (args.length >= 3) {
+				
+				if (args[0].equalsIgnoreCase("message") || args[0].equalsIgnoreCase("msg")) {
+					
 					Player player = Bukkit.getPlayer(args[1]);
 
-					if (player != null)
-					{
+					if (player != null) {
+						
 						StringBuilder msg = new StringBuilder();
 
-						for (int i = 2; i < args.length; i++)
-						{
+						for (int i = 2; i < args.length; i++) {
 							msg.append(args[i] + " ");
 						}
 
 						player.sendMessage(msg.toString());
+						
+					} else {
+						P2Util.warning("[Error] Could not find player: " + args[1]);
 					}
-					else
-					{
-						P2Util.log("[Error] Could not find player: " + args[1]);
-					}
+					
 				}
-			}
-			else
-			{
+				
+			} else {
 				P2Util.log("-- TimedRewards Console Command Help --");
 				P2Util.log("tr msg <player> <msg> - Sends a message without prefix to specified player.");
 			}
+			
 		}
 
 		return false;
+		
 	}
+	
 }
