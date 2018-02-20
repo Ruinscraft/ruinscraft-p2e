@@ -1,6 +1,6 @@
 # ruinscraft-p2e
 (Ruinscraft PlotSquared Extensions)
-Bukkit plugin for various features to extend functionality of PlotSquared
+Bukkit plugin for various features which extend the functionality of PlotSquared
 
 # Extensions
 | Name          | Command       | Description                                           |
