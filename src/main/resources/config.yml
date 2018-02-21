@@ -1,0 +1,64 @@
+data-bukkit:
+    isEnabled: true
+    server: hub
+    webpurify-key: abc123
+    database:
+        url: jdbc:mysql://localhost:3306/ruinscraft?&useSSL=false
+        username: root
+        password: password
+        
+plot-border:
+    isEnabled: true
+    
+timed-claims:
+    isEnabled: true
+    # Allows the player to claim all rewards (if has permission) when their data is first created.
+    first-time-claim: true
+
+    # If true when a player attempts to claim (clicks) a reward the inventory will close, otherwise it will remain open.
+    close-inventory-on-claim: true
+
+    menus:
+        rewards:
+        # Size of the menu (inventory)
+        # 54 = Double Chest | 27 = Single Chest
+        size: 27
+
+        # The name of the rewards menu.
+        title: '&8Rewards Menu'
+
+        # This will replace all other items in the menu with the below id, 0 being air (nothing).
+        # Note: If the item id has data make sure to put it as a string by surrounding it with quotes.
+        #       Example: other-items: '160:15'
+        other-items: 0
+
+        reward-items:
+            daily:
+            # The id of the item to be shown.
+            id: 2
+            # The amount of blocks to be shown.
+            amount: 1
+            # Title of the item.
+            name: '&6More claims'
+            # Time in seconds until they can claim it again.
+            time: 86400
+            # The lore of the item, a description if you like. Note put "lore: []", without quotation, if you don't want a lore.
+            # Note: Using {time} will change to the 'claim-message' in messages.yml if there are 0s remaining. (recommended).
+            # {time} - Example: 5d 01:01:42 (Same as: {days}d {hours}:{minutes}:{seconds})
+            # {days}
+            # {hours}
+            # {minutes}
+            # {seconds}
+            lore:
+            - '&7Earn more claims with playtime!'
+            - '&7Time until next claim: &6{time}'
+            - '&7Claims earned so far: &6{plotssofar}'
+            - '&7Total claims: &6{all}'
+            - '&7Unclaimed claims: &6{unclaimed}'
+            # The menu slot which the item will be displayed in.
+            slot: 13
+            # Commands which are ran when a player successfully claims a reward. Note: Commands are ran as console.
+            # {player} - The player's name.
+            # {uuid}   - The player's uuid.
+            claim-reward-cmds:
+            - 'giveplot {player} 1'
