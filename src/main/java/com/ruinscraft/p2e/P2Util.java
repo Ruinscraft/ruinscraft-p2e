@@ -1,22 +1,20 @@
 package com.ruinscraft.p2e;
 
-import com.google.common.io.ByteStreams;
-import com.intellectualcrafters.plot.util.MathMan;
-
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Logger;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import com.google.common.io.ByteStreams;
+import com.intellectualcrafters.plot.util.MathMan;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class P2Util {
-	
-	private static Logger logger = Bukkit.getLogger();
 	
 	private static InputStream in;
 	private static OutputStream out;
@@ -37,15 +35,7 @@ public class P2Util {
 	public static void messagePlayer(Player player, String msg) {
 		player.sendMessage(P2Util.color(msg));
 	}
-
-	public static void log(String msg) { 
-		logger.info(msg);
-	}
 	
-	public static void warning(String msg) { 
-		logger.warning(msg);
-	}
-
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
