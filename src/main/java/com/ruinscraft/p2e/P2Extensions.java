@@ -5,15 +5,21 @@ import java.util.Set;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.ruinscraft.p2e.extensions.Timer;
+
 public class P2Extensions extends JavaPlugin {
 
 	private final Set<P2Extension> extensions = new HashSet<>();
 	
 	@Override
 	public void onEnable() {
+		
+		registerExtension(new Timer());
+		
 		for (P2Extension extension : extensions) {
 			extension.enable();
 		}
+		
 	}
 	
 	@Override
