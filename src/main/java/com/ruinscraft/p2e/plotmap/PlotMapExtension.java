@@ -55,7 +55,7 @@ public class PlotMapExtension implements Listener, Extension {
 	private LinkedHashMap<String, ChatColor> users = new LinkedHashMap<String, ChatColor>();
 
 	@Override
-	public void enable() {
+	public boolean enable() {
 		
 		plotMap = this;
 		
@@ -64,13 +64,17 @@ public class PlotMapExtension implements Listener, Extension {
 
 		// register login / plot events
 		instance.getServer().getPluginManager().registerEvents(this, instance);
+		
+		return true;
 
 	}
 
 	@Override
-	public void disable() {
+	public boolean disable() {
 
 		plotMap = null;
+		
+		return true;
 
 	}
 

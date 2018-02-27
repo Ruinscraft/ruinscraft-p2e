@@ -20,7 +20,7 @@ public class PlotBorderExtension implements Extension {
 	private static List<UUID> activePlayers;
 	
 	@Override
-	public void enable() {
+	public boolean enable() {
 		
 		plotBorder = this;
 		
@@ -30,11 +30,14 @@ public class PlotBorderExtension implements Extension {
 		
 		Bukkit.getScheduler().runTaskTimer(instance, new ParticleRunnable(), 0L, 10L);
 		
+		return true;
+		
 	}
 	
 	@Override
-	public void disable() {
+	public boolean disable() {
 		plotBorder = null;
+		return true;
 	}
 	
 	public static PlotBorderExtension getPlotBorder() {

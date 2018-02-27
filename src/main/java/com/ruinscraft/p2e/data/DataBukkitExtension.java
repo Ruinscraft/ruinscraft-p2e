@@ -45,7 +45,7 @@ public class DataBukkitExtension implements Data, Listener, Extension {
 	}
 	
 	@Override
-	public void enable() {
+	public boolean enable() {
 		
 		dataBukkit = this;
 
@@ -65,10 +65,13 @@ public class DataBukkitExtension implements Data, Listener, Extension {
 		saveTask = new SaveMetaToStorageTask(playerManager, sqlStorage);
 
 		instance.getServer().getScheduler().runTaskTimerAsynchronously(instance, saveTask, 10L, 50L);
+		
+		return true;
+		
 	}
 	
 	@Override
-	public void disable() {
+	public boolean disable() {
 		
 		saveTask.cancel();
 
@@ -80,6 +83,7 @@ public class DataBukkitExtension implements Data, Listener, Extension {
 
 		dataBukkit = null;
 
+		return true;
 		
 	}
 

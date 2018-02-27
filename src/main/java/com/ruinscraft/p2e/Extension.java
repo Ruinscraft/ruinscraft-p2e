@@ -2,8 +2,8 @@ package com.ruinscraft.p2e;
 
 public interface Extension {
 	
-	void enable();
+	boolean enable();
 	
-	void disable();
+	boolean disable();
 	
 }

@@ -16,7 +16,7 @@ public class TimedClaimsExtension implements Extension {
 	private static MenuHandler menuHandler;
 
 	@Override
-	public void enable() {
+	public boolean enable() {
 		
 		P2Util.log("Plugin enabled (version: " + instance.getDescription().getVersion() + ") by ImABradley.");
 		timedClaimsExtension = this;
@@ -42,14 +42,18 @@ public class TimedClaimsExtension implements Extension {
 			
 		}.runTaskTimerAsynchronously(instance, 0L, 1200L);
 		
+		return true;
+		
 	}
 
 	@Override
-	public void disable() {
+	public boolean disable() {
 		
 		P2Util.log("Plugin disabled (version: " + instance.getDescription().getVersion() + ") by ImABradley.");
 		
 		timedClaimsExtension = null;
+		
+		return true;
 		
 	}
 
