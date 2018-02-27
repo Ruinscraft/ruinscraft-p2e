@@ -7,15 +7,19 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 
-import com.ruinscraft.p2e.Extension;
+import com.intellectualcrafters.plot.commands.SubCommand;
+import com.ruinscraft.p2e.P2Extension;
 import com.ruinscraft.p2e.P2Extensions;
 
-public class PlotBorderExtension implements Extension {
+
+public class PlotBorderExtension implements P2Extension {
 	
 	public static final Particle PARTICLE = Particle.HEART;
 	
 	private static PlotBorderExtension plotBorder;
 	private static P2Extensions instance = P2Extensions.getInstance();
+	
+	private BorderCommand command;
 	
 	private static List<UUID> activePlayers;
 	
@@ -26,7 +30,7 @@ public class PlotBorderExtension implements Extension {
 		
 		activePlayers = new ArrayList<UUID>();
 		
-		instance.getCommand("pborder").setExecutor(new BorderCommand());
+		command = new BorderCommand();
 		
 		Bukkit.getScheduler().runTaskTimer(instance, new ParticleRunnable(), 0L, 10L);
 		
@@ -38,6 +42,14 @@ public class PlotBorderExtension implements Extension {
 	public boolean disable() {
 		plotBorder = null;
 		return true;
+	}
+	
+	public String getName() {
+		return "Biome-Auto";
+	}
+	
+	public SubCommand getP2SubCommand() {
+		return command;
 	}
 	
 	public static PlotBorderExtension getPlotBorder() {

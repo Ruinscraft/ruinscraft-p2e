@@ -22,18 +22,19 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
 import com.intellectualcrafters.plot.PS;
+import com.intellectualcrafters.plot.commands.SubCommand;
 import com.intellectualcrafters.plot.object.Location;
 import com.intellectualcrafters.plot.object.Plot;
 import com.intellectualcrafters.plot.object.PlotArea;
 import com.intellectualcrafters.plot.object.PlotId;
 import com.intellectualcrafters.plot.object.PlotPlayer;
-import com.ruinscraft.p2e.Extension;
+import com.ruinscraft.p2e.P2Extension;
 import com.ruinscraft.p2e.P2Extensions;
 import com.ruinscraft.p2e.P2Util;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class PlotMapExtension implements Listener, Extension {
+public class PlotMapExtension implements Listener, P2Extension {
 
 	private static PlotMapExtension plotMap;
 	private static P2Extensions instance = P2Extensions.getInstance();
@@ -53,6 +54,8 @@ public class PlotMapExtension implements Listener, Extension {
 	public Map<String, Boolean> taskMap = new HashMap<String, Boolean>();
 	private Map<Player, Scoreboard> scoreboards = new HashMap<Player, Scoreboard>();
 	private LinkedHashMap<String, ChatColor> users = new LinkedHashMap<String, ChatColor>();
+	
+	private MapCommand command;
 
 	@Override
 	public boolean enable() {
@@ -60,7 +63,7 @@ public class PlotMapExtension implements Listener, Extension {
 		plotMap = this;
 		
 		// gets subcommand
-		new MapCommand();
+		command = new MapCommand();
 
 		// register login / plot events
 		instance.getServer().getPluginManager().registerEvents(this, instance);
@@ -76,6 +79,14 @@ public class PlotMapExtension implements Listener, Extension {
 		
 		return true;
 
+	}
+	
+	public String getName() {
+		return "Plot-Map";
+	}
+	
+	public SubCommand getP2SubCommand() {
+		return command;
 	}
 
 	public boolean updateMap(Player realPlayer) {

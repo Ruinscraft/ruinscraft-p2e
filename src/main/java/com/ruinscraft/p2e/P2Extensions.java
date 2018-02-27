@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.ruinscraft.p2e.biomeauto.BiomeAutoExtension;
 import com.ruinscraft.p2e.data.DataBukkitExtension;
 import com.ruinscraft.p2e.plotborder.PlotBorderExtension;
+import com.ruinscraft.p2e.plotmap.PlotMapExtension;
 import com.ruinscraft.p2e.timedclaims.TimedClaimsExtension;
 
 public class P2Extensions extends JavaPlugin {
@@ -18,7 +19,7 @@ public class P2Extensions extends JavaPlugin {
 	// giveplot
 	// plot-map +
 	// plot-border +
-	// biome-finder
+	// biome-finder +
 	// timed-claims +
 	
 	/*/
@@ -29,7 +30,7 @@ public class P2Extensions extends JavaPlugin {
 	
 	private static P2Extensions p2Extensions;
 	
-	private Collection<Extension> extensions;
+	private Collection<P2Extension> extensions;
 	
 	@Override
 	public void onEnable() {
@@ -39,50 +40,53 @@ public class P2Extensions extends JavaPlugin {
 		
 		saveDefaultConfig();
 		
-		if (isEnabled("data-bukkit")) {
-			if (DataBukkitExtension.getDataBukkit().enable()) {
-				P2Util.log("Data-Bukkit enabled");
-				extensions.add(DataBukkitExtension.getDataBukkit());
-			}
-		}
-		
-		if (isEnabled("plot-border")) {
-			if (PlotBorderExtension.getPlotBorder().enable()) {
-				P2Util.log("Plot-Border enabled");
-				extensions.add(PlotBorderExtension.getPlotBorder());
-			}
-		}
-		
-		if (isEnabled("timed-claims")) {
-			if (TimedClaimsExtension.getTimedClaims().enable()) {
-				P2Util.log("Timed-Claims enabled");
-				extensions.add(TimedClaimsExtension.getTimedClaims());
-			}
-		}
-		
-		if (isEnabled("biome-auto")) {
-			if (BiomeAutoExtension.getBiomeAuto().enable()) {
-				P2Util.log("Biome-Auto enabled");
-				extensions.add(BiomeAutoExtension.getBiomeAuto());
-			}
-		}
+		registerExtension(new DataBukkitExtension());
+		registerExtension(new PlotMapExtension());
+		registerExtension(new PlotBorderExtension());
+		registerExtension(new BiomeAutoExtension());
+		registerExtension(new TimedClaimsExtension());
 		
 	}
 	
 	@Override
 	public void onDisable() {
-		p2Extensions = null;
-		for (Extension extension : extensions) {
+		
+		for (P2Extension extension : extensions) {
 			extension.disable();
 		}
+		extensions.clear();
+		p2Extensions = null;
+		
+	}
+	
+	public void registerExtension(P2Extension extension) {
+		
+		if (isEnabled(extension.getName())) {
+			if (extension.enable()) {
+				extensions.add(extension);
+				getLogger().info(extension.getName() + " enabled!"); 
+			} else {
+				getLogger().info(extension.getName() + " disabled!"); 
+			}
+		}
+		
+	}
+	
+	public void unregisterExtension(P2Extension extension) {
+		
+		if (extension.disable()) {
+			extensions.remove(extension);
+			getLogger().info(extension.getName() + " enabled!"); 
+		}
+		
+	}
+	
+	public static boolean isEnabled(String path) {
+		return p2Extensions.getConfig().getBoolean(path.toLowerCase() + ".isEnabled");
 	}
 	
 	public static P2Extensions getInstance() {
 		return p2Extensions;
-	}
-	
-	public static boolean isEnabled(String path) {
-		return p2Extensions.getConfig().getBoolean(path + ".isEnabled");
 	}
 	
 }

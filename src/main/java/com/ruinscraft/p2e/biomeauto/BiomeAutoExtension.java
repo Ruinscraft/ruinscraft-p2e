@@ -30,7 +30,7 @@ import com.intellectualcrafters.plot.commands.RequiredType;
 import com.intellectualcrafters.plot.commands.SubCommand;
 import com.intellectualcrafters.plot.object.PlotPlayer;
 import com.plotsquared.general.commands.CommandDeclaration;
-import com.ruinscraft.p2e.Extension;
+import com.ruinscraft.p2e.P2Extension;
 import com.ruinscraft.p2e.P2Extensions;
 
 import us.blockbox.biomefinder.BiomeFinder;
@@ -45,7 +45,7 @@ import us.blockbox.biomefinder.CacheManager;
 		description = "Choose a biome to start claiming land in",
 		requiredType = RequiredType.NONE)
 
-public class BiomeAutoExtension extends SubCommand implements Extension, Listener {
+public class BiomeAutoExtension extends SubCommand implements P2Extension, Listener {
 	
 	private static Map<Player, Inventory> inventories;
 	private static Map<ItemStack, Biome> biomeInv;
@@ -82,6 +82,14 @@ public class BiomeAutoExtension extends SubCommand implements Extension, Listene
 		
 		return true;
 		
+	}
+	
+	public String getName() {
+		return "Biome-Auto";
+	}
+	
+	public SubCommand getP2SubCommand() {
+		return this;
 	}
 
 	@Override
@@ -320,7 +328,7 @@ public class BiomeAutoExtension extends SubCommand implements Extension, Listene
 
 					ItemMeta meta = biomeItem.getItemMeta();
 					meta.setDisplayName(ChatColor.GOLD + biomeName);
-					meta.setLore(Arrays.asList(ChatColor.RED + "Available for VIP tiers"));
+					meta.setLore(Arrays.asList(ChatColor.RED + "Available for a higher VIP tier"));
 					biomeItem.setItemMeta(meta);
  					
 					vipItems.add(biomeItem);

@@ -5,19 +5,23 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.google.common.base.Optional;
+import com.intellectualcrafters.plot.object.PlotPlayer;
 import com.ruinscraft.p2e.P2Extensions;
 import com.ruinscraft.p2e.P2Util;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
-public class YamlHandler {
+public class DataHandler {
 	
 	private static P2Extensions instance = P2Extensions.getInstance();
 	private FileConfiguration config;
 	private String pdfile;
 
-	public YamlHandler(Plugin plugin) {
+	public DataHandler(Plugin plugin) {
 		
 		this.config = plugin.getConfig();
 		this.pdfile = plugin.getDataFolder() + File.separator + "playerdata";
@@ -30,36 +34,20 @@ public class YamlHandler {
 		this.config = instance.getConfig();
 		
 	}
+	
+	// all a mess rn
 
-	public YamlConfiguration getPlayerYaml(Player player) {
+	public YamlConfiguration getPlayerYaml(PlotPlayer player) {
 		
-		File file = new File(pdfile, player.getUniqueId().toString() + ".yml");
-		YamlConfiguration pconfig = YamlConfiguration.loadConfiguration(file);
-		String path = "menus.rewards.reward-items";
+		if (player.getMeta("claimTime") == null) {
 
-		if (!file.exists()) {
+			player.setPersistentMeta("time-online", new byte[0]);
+			player.setPersistentMeta("plots-given", new byte[0]);
 			
-			pconfig.set("name", player.getName());
-			pconfig.set("uuid", player.getUniqueId().toString());
-
-			for (String s : config.getConfigurationSection(path).getKeys(false)) {
-				
-				pconfig.set("rewards." + s + ".time-online", 0); 
-				pconfig.set("rewards." + s + ".plots-given", 0);
-				
-				if (config.getBoolean("first-time-claim")) {
-					pconfig.set("rewards." + s + ".claim-time", 0); 	
-				} else {
-					pconfig.set("rewards." + s + ".claim-time", System.currentTimeMillis());
-				}
-				
-			}
-
-			try {
-				pconfig.save(file);
-			} catch (IOException e) {
-				P2Util.log("[Error] An IOException occurred when saving " + P2Util.getNameEnding(player.getName()) + " config " + "file:");
-				e.printStackTrace();
+			if (config.getBoolean("first-time-claim")) {
+				player.setPersistentMeta("claim-time", new byte[0]);
+			} else {
+				player.setPersistentMeta("claim-time", new byte[]); // System.currentTimeMillis()
 			}
 			
 		}

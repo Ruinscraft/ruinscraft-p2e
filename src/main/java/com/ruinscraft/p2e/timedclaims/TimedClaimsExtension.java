@@ -4,15 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.ruinscraft.p2e.Extension;
+import com.ruinscraft.p2e.P2Extension;
 import com.ruinscraft.p2e.P2Extensions;
 import com.ruinscraft.p2e.P2Util;
 
-public class TimedClaimsExtension implements Extension {
+public class TimedClaimsExtension implements P2Extension {
 	
 	private static TimedClaimsExtension timedClaimsExtension;
 	private static P2Extensions instance;
-	private static YamlHandler yamlHandler;
+	private static DataHandler dataHandler;
 	private static MenuHandler menuHandler;
 
 	@Override
@@ -24,7 +24,7 @@ public class TimedClaimsExtension implements Extension {
 		P2Util.loadResource("config.yml");
 		P2Util.loadResource("messages.yml");
 
-		yamlHandler = new YamlHandler(instance);
+		dataHandler = new DataHandler(instance);
 		menuHandler = new MenuHandler(instance);
 
 		instance.getCommand("nextclaim").setExecutor(new RewardsCmd());

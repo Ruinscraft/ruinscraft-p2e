@@ -12,14 +12,26 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.ruinscraft.p2e.Extension;
+import com.intellectualcrafters.plot.commands.CommandCategory;
+import com.intellectualcrafters.plot.commands.RequiredType;
+import com.intellectualcrafters.plot.commands.SubCommand;
+import com.intellectualcrafters.plot.object.PlotPlayer;
+import com.plotsquared.general.commands.CommandDeclaration;
+import com.ruinscraft.p2e.P2Extension;
 import com.ruinscraft.p2e.P2Extensions;
 import com.ruinscraft.p2e.data.storage.MySqlConnectionProvider;
 import com.ruinscraft.p2e.data.storage.MySqlStorage;
 import com.ruinscraft.p2e.data.storage.SaveMetaToStorageTask;
 import com.ruinscraft.p2e.data.storage.SqlStorage;
 
-public class DataBukkitExtension implements Data, Listener, Extension {
+@CommandDeclaration(
+		command = "data-bukkit", 
+		category = CommandCategory.DEBUG, 
+		usage = "/plot data-bukkit",
+		description = "data-bukkit",
+		requiredType = RequiredType.CONSOLE)
+
+public class DataBukkitExtension extends SubCommand implements Data, Listener, P2Extension {
 	
 	private MySqlStorage sqlStorage;
 	private RuinscraftPlayerManager playerManager;
@@ -85,6 +97,14 @@ public class DataBukkitExtension implements Data, Listener, Extension {
 
 		return true;
 		
+	}
+	
+	public String getName() {
+		return "Data-Bukkit";
+	}
+	
+	public SubCommand getP2SubCommand() {
+		return this;
 	}
 
 	// Run asynchronously
@@ -219,6 +239,15 @@ public class DataBukkitExtension implements Data, Listener, Extension {
 
 		return instance.getConfig().getString("webpurify-key");
 
+	}
+
+	@Override
+	public boolean onCommand(PlotPlayer plotPlayer, String[] args) {
+		
+		plotPlayer.sendMessage(getName());
+		
+		return false;
+		
 	}
 	
 }

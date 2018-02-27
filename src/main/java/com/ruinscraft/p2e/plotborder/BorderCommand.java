@@ -1,13 +1,24 @@
 package com.ruinscraft.p2e.plotborder;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BorderCommand implements CommandExecutor {
+import com.intellectualcrafters.plot.commands.CommandCategory;
+import com.intellectualcrafters.plot.commands.RequiredType;
+import com.intellectualcrafters.plot.commands.SubCommand;
+import com.intellectualcrafters.plot.object.PlotPlayer;
+import com.plotsquared.general.commands.CommandDeclaration;
 
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+@CommandDeclaration(
+		command = "border", 
+		category = CommandCategory.APPEARANCE, 
+		usage = "/plot border",
+		permission = "plots.border", 
+		description = "Visualize your plot border with particles",
+		requiredType = RequiredType.PLAYER)
+
+public class BorderCommand extends SubCommand {
+
+	public boolean onCommand(PlotPlayer sender, String[] args) {
 		
 		if (!(sender instanceof Player)) {
 			return false;
