@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ruinscraft.p2e.biomeauto.BiomeAutoExtension;
-import com.ruinscraft.p2e.data.DataBukkitExtension;
 import com.ruinscraft.p2e.plotborder.PlotBorderExtension;
 import com.ruinscraft.p2e.plotmap.PlotMapExtension;
 import com.ruinscraft.p2e.timedclaims.TimedClaimsExtension;
@@ -25,7 +24,6 @@ public class P2Extensions extends JavaPlugin {
 		
 		saveDefaultConfig();
 		
-		registerExtension(new DataBukkitExtension());
 		registerExtension(new PlotMapExtension());
 		registerExtension(new PlotBorderExtension());
 		registerExtension(new BiomeAutoExtension());
