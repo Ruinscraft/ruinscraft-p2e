@@ -1,76 +1,52 @@
 package com.ruinscraft.p2e.timedclaims;
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import com.google.common.base.Optional;
 import com.intellectualcrafters.plot.object.PlotPlayer;
+import com.intellectualcrafters.plot.util.ByteArrayUtilities;
 import com.ruinscraft.p2e.P2Extensions;
-import com.ruinscraft.p2e.P2Util;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Arrays;
 
 public class DataHandler {
 	
 	private static P2Extensions instance = P2Extensions.getInstance();
-	private FileConfiguration config;
-	private String pdfile;
 
-	public DataHandler(Plugin plugin) {
+	public static void setPlayerYaml(PlotPlayer player) {
 		
-		this.config = plugin.getConfig();
-		this.pdfile = plugin.getDataFolder() + File.separator + "playerdata";
-		
-	}
+		if (player.getPersistentMeta("claim-time") == null) {
 
-	public void reload() {
-		
-		instance.reloadConfig();
-		this.config = instance.getConfig();
-		
-	}
-	
-	// all a mess rn
-
-	public YamlConfiguration getPlayerYaml(PlotPlayer player) {
-		
-		if (player.getMeta("claimTime") == null) {
-
-			player.setPersistentMeta("time-online", new byte[0]);
-			player.setPersistentMeta("plots-given", new byte[0]);
+			player.setPersistentMeta("time-online", ByteArrayUtilities.integerToBytes(0));
+			player.setPersistentMeta("plots-given", ByteArrayUtilities.integerToBytes(0));
 			
-			if (config.getBoolean("first-time-claim")) {
-				player.setPersistentMeta("claim-time", new byte[0]);
+			if (instance.getConfig().getBoolean("first-time-claim")) {
+				player.setPersistentMeta("claim-time", ByteArrayUtilities.integerToBytes(0));
 			} else {
-				player.setPersistentMeta("claim-time", new byte[]); // System.currentTimeMillis()
+				player.setPersistentMeta("claim-time", ByteArrayUtilities.integerToBytes((int) System.currentTimeMillis() % Integer.MAX_VALUE));
 			}
 			
 		}
-
-		return pconfig;
 		
 	}
-
-	public void savePlayerYaml(Player player, YamlConfiguration pconfig) {
-		
-		File file = new File(pdfile, player.getUniqueId() + ".yml");
-
-		if (pconfig == null) pconfig = getPlayerYaml(player);
-
-		try {
-			pconfig.save(file);
-		} catch (IOException e) {
-			P2Util.log("An error occurred when saving " + P2Util.getNameEnding(player.getName()) + " config " + "file:");
-			e.printStackTrace();
-		}
-		
+	
+	public static Integer getClaimTime(PlotPlayer player) {
+		return ByteArrayUtilities.bytesToInteger(player.getPersistentMeta("claim-time"));
 	}
-
-	public FileConfiguration getConfig() { return config; }
+	
+	public static void setClaimTime(PlotPlayer player, int claimTime) {
+		player.setPersistentMeta("claim-time", ByteArrayUtilities.integerToBytes(claimTime));
+	}
+	
+	public static Integer getTimeOnline(PlotPlayer player) {
+		return ByteArrayUtilities.bytesToInteger(player.getPersistentMeta("time-online"));
+	}
+	
+	public static void setTimeOnline(PlotPlayer player, int timeOnline) {
+		player.setPersistentMeta("time-online", ByteArrayUtilities.integerToBytes(timeOnline));
+	}
+	
+	public static Integer getPlotsGiven(PlotPlayer player) {
+		return ByteArrayUtilities.bytesToInteger(player.getPersistentMeta("plots-given"));
+	}
+	
+	public static void setPlotsGiven(PlotPlayer player, int plotsGiven) {
+		player.setPersistentMeta("plots-given", ByteArrayUtilities.integerToBytes(plotsGiven));
+	}
 	
 }

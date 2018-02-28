@@ -3,6 +3,7 @@ package com.ruinscraft.p2e.timedclaims;
 import com.intellectualcrafters.plot.PS;
 import com.intellectualcrafters.plot.object.PlotArea;
 import com.intellectualcrafters.plot.object.PlotPlayer;
+import com.ruinscraft.p2e.P2Extensions;
 import com.ruinscraft.p2e.P2Util;
 
 import org.bukkit.Bukkit;
@@ -25,9 +26,9 @@ public class RewardsMenu {
 	private HashMap<String, ItemStack> rewardItems = new HashMap<String, ItemStack>();
 
 	@SuppressWarnings("deprecation")
-	public RewardsMenu(Player player) {
+	public RewardsMenu(PlotPlayer player) {
 		
-		FileConfiguration config = TimedClaimsExtension.getYamlHandler().getConfig();
+		FileConfiguration config = P2Extensions.getInstance().getConfig();
 		String path = "menus.rewards.reward-items";
 
 		this.size = config.getInt("menus.rewards.size");

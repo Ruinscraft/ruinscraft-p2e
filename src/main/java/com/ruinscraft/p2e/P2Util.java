@@ -1,6 +1,7 @@
 package com.ruinscraft.p2e;
 
 import com.google.common.io.ByteStreams;
+import com.intellectualcrafters.plot.object.PlotPlayer;
 import com.intellectualcrafters.plot.util.MathMan;
 
 import net.md_5.bungee.api.ChatColor;
@@ -32,6 +33,16 @@ public class P2Util {
 	// Get org.bukkit.Location from com.intellectualcrafters.plot.object.Location
 	public static Location getLocation(com.intellectualcrafters.plot.object.Location location) {
 		return new Location(Bukkit.getWorld(location.getWorld()), location.getX(), location.getY(), location.getZ());
+	}
+	
+	// Get PlotPlayer from Player
+	public static PlotPlayer getPlayer(Player player) {
+		return PlotPlayer.get(player.getName());
+	}
+	
+	// Get Player from PlotPlayer
+	public static Player getPlayer(PlotPlayer player) {
+		return Bukkit.getPlayer(player.getUUID());
 	}
 
 	public static void messagePlayer(Player player, String msg) {

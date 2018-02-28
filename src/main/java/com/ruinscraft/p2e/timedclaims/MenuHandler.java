@@ -2,7 +2,6 @@ package com.ruinscraft.p2e.timedclaims;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +11,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.intellectualcrafters.plot.object.PlotPlayer;
+import com.intellectualcrafters.plot.util.ByteArrayUtilities;
 import com.ruinscraft.p2e.P2Extensions;
 import com.ruinscraft.p2e.P2Util;
 
@@ -22,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 public class MenuHandler implements Listener {
 	
+	private static P2Extensions instance = P2Extensions.getInstance();
+	
 	private static HashMap<UUID, RewardsMenu> rewardsMenus = new HashMap<UUID, RewardsMenu>();
 	private static ArrayList<UUID> runningTasks = new ArrayList<UUID>();
 	private HashMap<String, Long> loginTime = new HashMap<String, Long>();
@@ -30,17 +33,23 @@ public class MenuHandler implements Listener {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 	
-	public HashMap<String, Long> getLoginTime() { return loginTime; }
+	public HashMap<String, Long> getLoginTime() { 
+		return loginTime; 
+	}
 	
 	public void setLoginTime(String player, Long time) {
 		loginTime.put(player, time);
 	}
 
-	public static void addRewardMenu(Player player, RewardsMenu menu) { rewardsMenus.put(player.getUniqueId(), menu); }
+	public static void addRewardMenu(PlotPlayer player, RewardsMenu menu) { 
+		rewardsMenus.put(player.getUUID(), menu); 
+	}
 
-	public void openRewardsMenu(Player player) { player.openInventory(this.getRewardsMenu(player).getInventory()); }
+	public void openRewardsMenu(PlotPlayer player) { 
+		P2Util.getPlayer(player).openInventory(this.getRewardsMenu(player).getInventory());
+	}
 
-	public RewardsMenu getRewardsMenu(Player player) {
+	public RewardsMenu getRewardsMenu(PlotPlayer player) {
 		
 		RewardsMenu rewardsMenu = rewardsMenus.get(player.getUniqueId());
 
@@ -53,25 +62,14 @@ public class MenuHandler implements Listener {
 		
 	}
 	
-	public long getTime(Player player) {
+	public long getTime(PlotPlayer player) {
 		
 		String playerName = player.getName();
 		long logintime = loginTime.get(playerName);
 		long time = System.currentTimeMillis() - logintime;
 		
-		YamlConfiguration pconfig = TimedClaimsExtension.getYamlHandler().getPlayerYaml(player);
-		FileConfiguration config = TimedClaimsExtension.getYamlHandler().getConfig();
-		String shortPath = "menus.rewards.reward-items";
-		
-		long claimedsofar = 0;
-		long delay = 0;
-		
-		for (String s : config.getConfigurationSection(shortPath).getKeys(false)) {
-			
-			claimedsofar = pconfig.getLong("rewards." + s + ".time-online");
-			delay = pconfig.getInt("rewards." + s + ".plots-given");
-			
-		}
+		long claimedsofar = ByteArrayUtilities.bytesToInteger(player.getPersistentMeta("time-online"));
+		long delay = ByteArrayUtilities.bytesToInteger(player.getPersistentMeta("plots-given"));
 		
 		long result = (1180000L + (delay * 1200000L)) - (claimedsofar + time);
 		
@@ -93,7 +91,7 @@ public class MenuHandler implements Listener {
 		
 	}
 	
-	public String getFormattedTime(Player player) {
+	public String getFormattedTime(PlotPlayer player) {
 		
 		long result = getTime(player);
 
@@ -111,14 +109,15 @@ public class MenuHandler implements Listener {
 		
 		int i = 0;
 		
-		for (Player player : Bukkit.getOnlinePlayers()) {
+		for (Player bukkitPlayer : Bukkit.getOnlinePlayers()) {
+			
+			PlotPlayer player = P2Util.getPlayer(bukkitPlayer);
 			
 			if (getTime(player) == 0) {
 				
 				i++;
 				
-				FileConfiguration config = TimedClaimsExtension.getYamlHandler().getConfig();
-				YamlConfiguration pconfig = TimedClaimsExtension.getYamlHandler().getPlayerYaml(player);
+				FileConfiguration config = instance.getConfig();
 				
 				String shortPath = "menus.rewards.reward-items";
 				
@@ -126,16 +125,15 @@ public class MenuHandler implements Listener {
 						
 					String path = shortPath + "." + s;
 						
-					int plots = pconfig.getInt("rewards." + s + ".plots-given");
+					int plots = DataHandler.getPlotsGiven(player);
 					int newplots = plots + 1;
-					pconfig.set("rewards." + s + ".plots-given", newplots);
-					
-					pconfig.set("rewards." + s + ".time-online", 0);
+					DataHandler.setPlotsGiven(player, newplots);
+					DataHandler.setTimeOnline(player, 0);
 			
 					for (String cmd : config.getStringList(path + ".claim-reward-cmds")) {
 						Bukkit.getServer()
 							.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player
-									.getName()).replace("{uuid}", player.getUniqueId().toString()));
+									.getName()).replace("{uuid}", player.getUUID().toString()));
 					}
 			
 				}
@@ -145,8 +143,6 @@ public class MenuHandler implements Listener {
 						.replace("{prefix}", P2Util.prefix));
 				
 				loginTime.put(player.getName(), System.currentTimeMillis());
-				
-				TimedClaimsExtension.getYamlHandler().savePlayerYaml(player, pconfig);
 				
 			}
 			

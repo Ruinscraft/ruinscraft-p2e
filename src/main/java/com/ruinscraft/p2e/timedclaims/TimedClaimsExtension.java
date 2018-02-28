@@ -12,8 +12,9 @@ public class TimedClaimsExtension implements P2Extension {
 	
 	private static TimedClaimsExtension timedClaimsExtension;
 	private static P2Extensions instance;
-	private static DataHandler dataHandler;
 	private static MenuHandler menuHandler;
+	
+	private NextCommand command;
 
 	@Override
 	public boolean enable() {
@@ -24,10 +25,9 @@ public class TimedClaimsExtension implements P2Extension {
 		P2Util.loadResource("config.yml");
 		P2Util.loadResource("messages.yml");
 
-		dataHandler = new DataHandler(instance);
 		menuHandler = new MenuHandler(instance);
 
-		instance.getCommand("nextclaim").setExecutor(new RewardsCmd());
+		command = new NextCommand();
 
 		PluginManager pm = Bukkit.getPluginManager();
 		pm.registerEvents(new PlayerJoinListener(), instance);
@@ -56,13 +56,22 @@ public class TimedClaimsExtension implements P2Extension {
 		return true;
 		
 	}
+	
+	@Override
+	public String getName() {
+		return "timed-claims";
+	}
+	
+	@Override
+	public NextCommand getP2SubCommand() {
+		return command;
+	}
 
 	public static void reloadPlugin() {
 		
 		P2Util.log("Reloading plugin..");
 
 		menuHandler = new MenuHandler(instance);
-		yamlHandler.reload();
 
 		P2Util.log("Plugin successfully reloaded.");
 		
@@ -71,7 +80,5 @@ public class TimedClaimsExtension implements P2Extension {
 	public static TimedClaimsExtension getTimedClaims() { return timedClaimsExtension; }
 
 	public static MenuHandler getMenuHandler() { return menuHandler; }
-
-	public static YamlHandler getYamlHandler() { return yamlHandler; }
 	
 }
