@@ -1,7 +1,5 @@
 package com.ruinscraft.p2e.timedclaims;
 
-import org.bukkit.entity.Player;
-
 import com.intellectualcrafters.plot.commands.CommandCategory;
 import com.intellectualcrafters.plot.commands.RequiredType;
 import com.intellectualcrafters.plot.commands.SubCommand;
@@ -18,14 +16,10 @@ import com.plotsquared.general.commands.CommandDeclaration;
 
 public class NextCommand extends SubCommand {
 
-	public boolean onCommand(PlotPlayer sender, String[] args) {
+	public boolean onCommand(PlotPlayer plotPlayer, String[] args) {
 		
-		if (sender.isOnline()) {
-			
-			Player player = (Player) sender;
-
-			TimedClaimsExtension.getMenuHandler().openRewardsMenu(player);
-			
+		if (plotPlayer.isOnline()) {
+			TimedClaimsExtension.getMenuHandler().openRewardsMenu(plotPlayer);
 		}
 
 		return false;

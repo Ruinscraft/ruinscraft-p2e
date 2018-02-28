@@ -51,7 +51,7 @@ public class MenuHandler implements Listener {
 
 	public RewardsMenu getRewardsMenu(PlotPlayer player) {
 		
-		RewardsMenu rewardsMenu = rewardsMenus.get(player.getUniqueId());
+		RewardsMenu rewardsMenu = rewardsMenus.get(player.getUUID());
 
 		if (rewardsMenu != null) {
 			rewardsMenu.update(player);
@@ -119,23 +119,15 @@ public class MenuHandler implements Listener {
 				
 				FileConfiguration config = instance.getConfig();
 				
-				String shortPath = "menus.rewards.reward-items";
-				
-				for (String s : config.getConfigurationSection(shortPath).getKeys(false)) {
-						
-					String path = shortPath + "." + s;
-						
-					int plots = DataHandler.getPlotsGiven(player);
-					int newplots = plots + 1;
-					DataHandler.setPlotsGiven(player, newplots);
-					DataHandler.setTimeOnline(player, 0);
+				int plots = DataHandler.getPlotsGiven(player);
+				int newplots = plots + 1;
+				DataHandler.setPlotsGiven(player, newplots);
+				DataHandler.setTimeOnline(player, 0);
 			
-					for (String cmd : config.getStringList(path + ".claim-reward-cmds")) {
-						Bukkit.getServer()
-							.dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player
-									.getName()).replace("{uuid}", player.getUUID().toString()));
-					}
-			
+				for (String cmd : config.getStringList(TimedClaimsExtension.getTimedClaims().getName() 
+															+ ".menus.reward-items.claim-reward-cmds")) {
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player
+								.getName()).replace("{uuid}", player.getUUID().toString()));
 				}
 				
 				
@@ -163,19 +155,19 @@ public class MenuHandler implements Listener {
 	@EventHandler 
 	public void onOpen(InventoryOpenEvent event) {
 		
-		final Player player = (Player) event.getPlayer();
+		final PlotPlayer player = P2Util.getPlayer((Player) event.getPlayer());
 		Inventory inventory = event.getInventory();
 
 		if (inventory.getName().equals(this.getRewardsMenu(player).getInventory().getName())) {
 			
 			final RewardsMenu rewardsMenu = this.getRewardsMenu(player);
-			runningTasks.add(player.getUniqueId());
+			runningTasks.add(player.getUUID());
 			final P2Extensions instance = P2Extensions.getInstance();
 
 			new BukkitRunnable() {
 				
 				public void run() {
-					if (player.isOnline() && runningTasks.contains(player.getUniqueId())) {
+					if (player.isOnline() && runningTasks.contains(player.getUUID())) {
 						rewardsMenu.update(player);
 					}
 					else cancel();

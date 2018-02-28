@@ -8,8 +8,6 @@ import com.ruinscraft.p2e.P2Util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,6 +22,7 @@ public class RewardsMenu {
 	private String title;
 
 	private HashMap<String, ItemStack> rewardItems = new HashMap<String, ItemStack>();
+	private String name = TimedClaimsExtension.getTimedClaims().getName();
 
 	@SuppressWarnings("deprecation")
 	public RewardsMenu(PlotPlayer player) {
@@ -31,8 +30,8 @@ public class RewardsMenu {
 		FileConfiguration config = P2Extensions.getInstance().getConfig();
 		String path = "menus.rewards.reward-items";
 
-		this.size = config.getInt("menus.rewards.size");
-		this.title = P2Util.color(config.getString("menus.rewards.title"));
+		this.size = config.getInt(name + "menus.rewards.size");
+		this.title = P2Util.color(config.getString(name + "menus.rewards.title"));
 		this.inventory = Bukkit.createInventory(null, size, title);
 		
 		try {
@@ -117,9 +116,9 @@ public class RewardsMenu {
 		
 	}
 
-	public void update(Player player) {
+	public void update(PlotPlayer player) {
 		
-		FileConfiguration config = TimedClaimsExtension.getYamlHandler().getConfig();
+		FileConfiguration config = P2Extensions.getInstance().getConfig();
 		String path = "menus.rewards.reward-items";
 
 		for (Map.Entry<String, ItemStack> entry : rewardItems.entrySet()) {
@@ -135,27 +134,20 @@ public class RewardsMenu {
 			long result = TimedClaimsExtension.getMenuHandler().getTime(player);
 			String time = TimedClaimsExtension.getMenuHandler().getFormattedTime(player);
 			
-			YamlConfiguration pconfig = TimedClaimsExtension.getYamlHandler().getPlayerYaml(player);
-			String shortPath = "menus.rewards.reward-items";
+			PlotArea area = PS.get().getPlotAreaAbs(player.getLocation());
+			int claimedPlots = area.getPlotsAbs(player).size();
+			int allPlots = player.getAllowedPlots();
 			
-			PlotPlayer user = PlotPlayer.wrap(player);
-			PlotArea area = PS.get().getPlotAreaAbs(user.getLocation());
-			int allowed = user.getAllowedPlots();
-			int i = area.getPlotsAbs(user).size();
+			int unclaimedPlots = allPlots - claimedPlots;
 			
-			int unclaimed = allowed - i;
-			
-			int delay = 0;
-			for (String s : config.getConfigurationSection(shortPath).getKeys(false)) {
-				delay = pconfig.getInt("rewards." + s + ".plots-given");
-			}
+			int delay = DataHandler.getPlotsGiven(player);
 
 			for (String line : config.getStringList(ipath + ".lore")) {
 
 				lore.add(P2Util.color(line.replace("{time}", time)
 						.replace("{plotssofar}", Integer.toString(delay))
-						.replace("{all}", Integer.toString(allowed))
-						.replace("{unclaimed}", Integer.toString(unclaimed))
+						.replace("{all}", Integer.toString(allPlots))
+						.replace("{unclaimed}", Integer.toString(unclaimedPlots))
 						.replace("{days}", Long.toString(TimeUnit.MILLISECONDS.toDays(result)))
 						.replace("{hours}", Long.toString(TimeUnit.MILLISECONDS.toHours(result) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS
 								.toDays(result))))
