@@ -140,7 +140,7 @@ public class RewardsMenu {
 			
 			int unclaimedPlots = allPlots - claimedPlots;
 			
-			int delay = DataHandler.getPlotsGiven(player);
+			int delay = player.getMeta(TimeMeta.PLOTS_GIVEN);
 
 			for (String line : config.getStringList(ipath + ".lore")) {
 

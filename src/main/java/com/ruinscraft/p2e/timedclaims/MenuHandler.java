@@ -12,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.intellectualcrafters.plot.object.PlotPlayer;
-import com.intellectualcrafters.plot.util.ByteArrayUtilities;
 import com.ruinscraft.p2e.P2Extensions;
 import com.ruinscraft.p2e.P2Util;
 
@@ -27,19 +26,10 @@ public class MenuHandler implements Listener {
 	
 	private static HashMap<UUID, RewardsMenu> rewardsMenus = new HashMap<UUID, RewardsMenu>();
 	private static ArrayList<UUID> runningTasks = new ArrayList<UUID>();
-	private HashMap<String, Long> loginTime = new HashMap<String, Long>();
 
 	public MenuHandler(Plugin plugin) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
     }
-	
-	public HashMap<String, Long> getLoginTime() { 
-		return loginTime; 
-	}
-	
-	public void setLoginTime(String player, Long time) {
-		loginTime.put(player, time);
-	}
 
 	public static void addRewardMenu(PlotPlayer player, RewardsMenu menu) { 
 		rewardsMenus.put(player.getUUID(), menu); 
@@ -64,12 +54,11 @@ public class MenuHandler implements Listener {
 	
 	public long getTime(PlotPlayer player) {
 		
-		String playerName = player.getName();
-		long logintime = loginTime.get(playerName);
+		long logintime = player.getMeta(TimeMeta.CLAIM_TIME);
 		long time = System.currentTimeMillis() - logintime;
 		
-		long claimedsofar = ByteArrayUtilities.bytesToInteger(player.getPersistentMeta("time-online"));
-		long delay = ByteArrayUtilities.bytesToInteger(player.getPersistentMeta("plots-given"));
+		long claimedsofar = player.getMeta(TimeMeta.TIME_ONLINE);
+		long delay = player.getMeta(TimeMeta.PLOTS_GIVEN);
 		
 		long result = (1180000L + (delay * 1200000L)) - (claimedsofar + time);
 		
@@ -119,10 +108,10 @@ public class MenuHandler implements Listener {
 				
 				FileConfiguration config = instance.getConfig();
 				
-				int plots = DataHandler.getPlotsGiven(player);
+				int plots = player.getMeta(TimeMeta.PLOTS_GIVEN);
 				int newplots = plots + 1;
-				DataHandler.setPlotsGiven(player, newplots);
-				DataHandler.setTimeOnline(player, 0);
+				player.setMeta(TimeMeta.PLOTS_GIVEN, newplots);
+				player.setMeta(TimeMeta.TIME_ONLINE, 0);
 			
 				for (String cmd : config.getStringList(TimedClaimsExtension.getTimedClaims().getName() 
 															+ ".menus.reward-items.claim-reward-cmds")) {
@@ -134,7 +123,7 @@ public class MenuHandler implements Listener {
 				player.sendMessage("{prefix} You have earned 1 new claim for your playtime! &l/p auto &r&7or &l/p claim"
 						.replace("{prefix}", P2Util.prefix));
 				
-				loginTime.put(player.getName(), System.currentTimeMillis());
+				player.setMeta(TimeMeta.CLAIM_TIME, (int) (System.currentTimeMillis() % Integer.MAX_VALUE));
 				
 			}
 			
@@ -187,6 +176,7 @@ public class MenuHandler implements Listener {
 		if (runningTasks.contains(player.getUniqueId())) {
 			runningTasks.remove(player.getUniqueId());
 		}
+		
 		
 	}
 }

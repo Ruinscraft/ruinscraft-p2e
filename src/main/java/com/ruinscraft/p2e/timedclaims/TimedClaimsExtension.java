@@ -19,7 +19,6 @@ public class TimedClaimsExtension implements P2Extension {
 	@Override
 	public boolean enable() {
 		
-		P2Util.log("Plugin enabled (version: " + instance.getDescription().getVersion() + ") by ImABradley.");
 		timedClaimsExtension = this;
 
 		P2Util.loadResource("config.yml");
@@ -48,8 +47,6 @@ public class TimedClaimsExtension implements P2Extension {
 
 	@Override
 	public boolean disable() {
-		
-		P2Util.log("Plugin disabled (version: " + instance.getDescription().getVersion() + ") by ImABradley.");
 		
 		timedClaimsExtension = null;
 		

@@ -13,21 +13,6 @@ import com.ruinscraft.p2e.timedclaims.TimedClaimsExtension;
 
 public class P2Extensions extends JavaPlugin {
 	
-	// data-bukkit +
-	// countdown
-	// plotsay
-	// giveplot
-	// plot-map +
-	// plot-border +
-	// biome-finder +
-	// timed-claims +
-	
-	/*/
-	 * TODO
-	 * create config & standardize
-	 * move playerdata made by timed-claims to data-bukkit
-	 */
-	
 	private static P2Extensions p2Extensions;
 	
 	private Collection<P2Extension> extensions;
