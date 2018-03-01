@@ -8,14 +8,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.block.BlockFace;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -47,8 +47,6 @@ public class PlotMapExtension implements Listener, P2Extension {
 	public static int radius = 3;
 
 	private PlotId id;
-	public BlockFace direction = BlockFace.SOUTH;
-	private String dirchar = "^";
 	
 	public Map<String, Boolean> userMap = new HashMap<String, Boolean>();
 	public Map<String, Boolean> taskMap = new HashMap<String, Boolean>();
@@ -82,7 +80,7 @@ public class PlotMapExtension implements Listener, P2Extension {
 	}
 	
 	public String getName() {
-		return "Plot-Map";
+		return "plot-map";
 	}
 	
 	public SubCommand getP2SubCommand() {
@@ -154,10 +152,14 @@ public class PlotMapExtension implements Listener, P2Extension {
 		int x = id.x;
 		
 		// get color codes for each user plot
-		users = setColors(id, loc, player.getName());
+		users.clear();
+		users = setColors(id, loc, player);
 		
 		// lists of the "scores" for the plot map
 		List<String> scorenames = new ArrayList<String>();
+		
+		PlotArea area = PS.get().getPlotAreaManager().getPlotArea(player.getLocation());
+		int radius = player.getMeta("plot-map-radius");
 		
 		// map sizing
 		for (z = (id.y - radius); z <= (id.y + radius); z++) {
@@ -169,44 +171,43 @@ public class PlotMapExtension implements Listener, P2Extension {
 			// map sizing
 			for (x = (id.x - radius); x <= (id.x + radius); x++) {
 
-				Plot plot = Plot.fromString(PS.get().getPlotAreaManager().getPlotArea(player.getLocation()),
-						(x + ";" + z));
+				Plot plot = Plot.fromString(area, (x + ";" + z));
 
 				if (plot.hasOwner()) {
 					
 					// only goes through this once; claims should have only one owner
-					for (UUID uuid : plot.getOwners()) {
-						
-						String owner = Bukkit.getOfflinePlayer(uuid).getName();
+					String owner = Bukkit.getOfflinePlayer((UUID) plot.getOwners().toArray()[0]).getName();
 
-						// your claim
-						if (owner == player.getName()) {
-							
-							if (z == (id.y) && x == (id.x)) {
-								stringBuilder.append(ChatColor.DARK_GREEN + "█");
-								continue;
-							}
-							
-							stringBuilder.append(ChatColor.DARK_GREEN + "▓");
-							
-							continue;
-
-						}
+					// your claim
+					if (owner == player.getName()) {
 						
-						// claims you are in
 						if (z == (id.y) && x == (id.x)) {
-
-							stringBuilder.append(users.get(owner) + "█");
+							stringBuilder.append(ChatColor.DARK_GREEN + "█");
 							continue;
-
 						}
-
-						// for other claims
-						stringBuilder.append(users.get(owner) + "▓");
 						
-						break;
+						stringBuilder.append(ChatColor.DARK_GREEN + "▓");
+						
+						continue;
 
 					}
+					
+					if (owner == "null" || owner == null) {
+						owner = "???";
+					}
+					
+					// claims you are in
+					if (z == (id.y) && x == (id.x)) {
+
+						stringBuilder.append(users.get(owner) + "█");
+						continue;
+
+					}
+
+					// for other claims
+					stringBuilder.append(users.get(owner) + "▓");
+					
+					continue;
 
 				} else {
 
@@ -239,9 +240,9 @@ public class PlotMapExtension implements Listener, P2Extension {
 				stringBuilder.append(ChatColor.YELLOW + "   ");
 			}
 			if (z == (id.y)) {
-				stringBuilder.append(ChatColor.GREEN + "   ");
-				//stringBuilder.append(ChatColor.GOLD + " " + ChatColor.BOLD + getLocationCharacter(direction));
-				//dirchar = getLocationCharacter(direction);
+				stringBuilder.append(ChatColor.GREEN + " ");
+				double direction = realPlayer.getEyeLocation().getYaw() / 90f;
+				stringBuilder.append(ChatColor.GOLD + " " + ChatColor.BOLD + getLocationCharacter(direction));
 			}
 			if (z == (id.y + 1)) {
 				stringBuilder.append(ChatColor.DARK_GREEN + "   ");
@@ -271,7 +272,7 @@ public class PlotMapExtension implements Listener, P2Extension {
 		}
 		
 		// objective which will contain scores displayed in the map
-		Objective objective = scoreboard.registerNewObjective(realPlayer.getName(), player.getUUID() + "plotmap");
+		Objective objective = scoreboard.registerNewObjective(realPlayer.getName(), player.getUUID() + " plotmap");
 
 		objective.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Claim Map");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -284,7 +285,10 @@ public class PlotMapExtension implements Listener, P2Extension {
 
 		// claim map
 		for (String scorename : scorenames) {
-
+			
+			if (scorename.length() > 39) {
+				scorename = scorename.substring(0, 39);
+			}
 			Score score = objective.getScore(scorename);
 			scoreInt--;
 			score.setScore(scoreInt);
@@ -343,7 +347,7 @@ public class PlotMapExtension implements Listener, P2Extension {
 				owner = (ChatColor.RESET + "" + ChatColor.UNDERLINE + Bukkit.getOfflinePlayer(uuid).getName());
 				
 				if (Bukkit.getOfflinePlayer(uuid).getName() == null) {
-					owner = (ChatColor.UNDERLINE + "Unknown");
+					owner = (ChatColor.UNDERLINE + "???");
 				}
 
 				if (realPlayer.getName() == Bukkit.getOfflinePlayer(uuid).getName()) {
@@ -369,12 +373,13 @@ public class PlotMapExtension implements Listener, P2Extension {
 	
 	// colors for each nearby plot (needs some work)
 	public LinkedHashMap<String, ChatColor> setColors(PlotId id, Location loc, 
-			String player) {
+			PlotPlayer player) {
 		
 		int z = id.y;
 		int x = id.x;
 		
 		List<String> owners = new ArrayList<String>();
+		int radius = player.getMeta("plot-map-radius");
 		
 		for (z = (id.y - radius); z <= (id.y + radius); z++) {
 			
@@ -388,6 +393,10 @@ public class PlotMapExtension implements Listener, P2Extension {
 				for (UUID owneruuid : plot.getOwners()) {
 					
 					String owner = Bukkit.getOfflinePlayer(owneruuid).getName();
+					
+					if (owner == "null" || owner == null) {
+						owner = "???";
+					}
 					
 					if (!owners.contains(owner)) {
 						owners.add(owner);
@@ -420,7 +429,7 @@ public class PlotMapExtension implements Listener, P2Extension {
 				continue;
 			}
 			
-			if (owner == player) {
+			if (owner == player.getName()) {
 				users.put(owner, ChatColor.DARK_GREEN);
 				continue;
 			}
@@ -470,44 +479,18 @@ public class PlotMapExtension implements Listener, P2Extension {
 	}
 	
 	// future use for direction
-	public String getLocationCharacter(BlockFace face) {
+	public String getLocationCharacter(Double direction) {
 		
-		String facename = face.name();
-		
-		switch (facename) {
-			case "NORTH":
-				return "^";
-			case "NORTH_NORTH_WEST":
-				return "^";
-			case "WEST_NORTH_WEST":
-				return "<";
-			case "WEST":
-				return "<";
-			case "WEST_SOUTH_WEST":
-				return "<";
-			case "SOUTH_WEST":
-				return "V";
-			case "SOUTH_SOUTH_WEST":
-				return "V";
-			case "SOUTH":
-				return "V";
-			case "SOUTH_SOUTH_EAST":
-				return "V";
-			case "SOUTH_EAST":
-				return "V";
-			case "EAST_SOUTH_EAST":
-				return ">";
-			case "EAST":
-				return ">";
-			case "EAST_NORTH_EAST":
-				return ">";
-			case "NORTH_EAST":
-				return "^";
-			case "NORTH_NORTH_EAST":
-				return "^";
-			default:
-				return dirchar;
-		
+		if ((direction > 135 && direction <= 180) || (direction < -135 && direction >= -180)) {
+			return "^";
+		} else if (direction >= 45 && direction < 135) {
+			return "<";
+		} else if (direction >= -45 && direction < 45) {
+			return "v";
+		} else if (direction >= -135 && direction < -45) {
+			return ">";
+		} else {
+			return "?";
 		}
 		
 	}
@@ -539,18 +522,43 @@ public class PlotMapExtension implements Listener, P2Extension {
 		}
 
 	}
+	
+	@EventHandler
+	public void onPlayerLeaveEvent(PlayerQuitEvent event) {
+		
+		OfflinePlayer player = event.getPlayer();
+		
+		taskMap.remove(player.getName());
+		userMap.remove(player.getName());
+		scoreboards.remove(player);
+		
+	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerPlotEntry(PlayerEnterPlotAbsEvent enter) {
 
 		// entry message if the plot has an owner
-		if (enter.getPlot().hasOwner()) {
+		if (enter.getToPlot().hasOwner()) {
 
 			List<String> owners = new ArrayList<String>();
 
-			for (UUID uuid : enter.getPlot().getOwners()) {
+			for (UUID uuid : enter.getToPlot().getOwners()) {
 				
 				Runnable entryMessageTask = new EntryMessageTask(enter.getPlayer());
+				
+				if (uuid == null) {
+					owners.add("???");
+					instance.getServer().getScheduler().runTaskAsynchronously(instance, entryMessageTask);
+					break;
+				}
+				
+				if (!(enter.getFromPlot() == null)) {
+					if (enter.getFromPlot().hasOwner()) {
+						if (uuid == enter.getFromPlot().getOwners().toArray()[0]) { 
+							break;
+						}
+					}
+				}
 
 				if (enter.getPlayer().getName() == Bukkit.getOfflinePlayer(uuid).getName()) {
 
@@ -563,6 +571,8 @@ public class PlotMapExtension implements Listener, P2Extension {
 					instance.getServer().getScheduler().runTaskAsynchronously(instance, entryMessageTask);
 
 				}
+				
+				break;
 
 			}
 
@@ -573,10 +583,8 @@ public class PlotMapExtension implements Listener, P2Extension {
 
 			if (userMap.get(enter.getPlayer().getName()) == true) {
 
-				if (!(enter.getPlot().hasOwner())) {
-					this.updateMap(enter.getPlayer());
-					return;
-				}
+				this.updateMap(enter.getPlayer());
+				return;
 
 			}
 
@@ -587,33 +595,24 @@ public class PlotMapExtension implements Listener, P2Extension {
 		}
 
 	}
-	
-	// future use for direction
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerTurn(PlayerMoveEvent event) {
 		
 		PlotPlayer plotPlayer = PlotPlayer.wrap(event.getPlayer());
 		Plot oldPlot = plotPlayer.getPlotAreaAbs().getPlotAbs(P2Util.getLocation(event.getFrom()));
 		Plot newPlot = plotPlayer.getPlotAreaAbs().getPlotAbs(P2Util.getLocation(event.getTo()));
-		if (!(oldPlot.getId().equals(newPlot.getId()))) {
-			Bukkit.getServer().getPluginManager().callEvent(new PlayerEnterPlotAbsEvent(event.getPlayer(), newPlot));
-		}
 		
-		
-		org.bukkit.Location ploc = event.getPlayer().getLocation();
-		World world = ploc.getWorld();
-		org.bukkit.Location blocto = ploc.toVector().add(event.getTo().getDirection().normalize()).toLocation(world);
-		org.bukkit.Location blocfrom = ploc.toVector().add(event.getFrom().getDirection().normalize()).toLocation(world);
-		BlockFace faceto = world.getBlockAt(event.getTo()).getFace(world.getBlockAt(blocto));
-		BlockFace facefrom = world.getBlockAt(event.getFrom()).getFace(world.getBlockAt(blocfrom));
-		
-		if (faceto == facefrom || direction == faceto || faceto == null) {
+		if (oldPlot == null && newPlot == null) {
+			return;
+		} else if (oldPlot != null && newPlot == null) {
+			return;
+		} else if ((oldPlot == null && newPlot != null) || !(oldPlot.getId().equals(newPlot.getId()))) {
+			Bukkit.getServer().getPluginManager().callEvent(new PlayerEnterPlotAbsEvent(event.getPlayer(), newPlot, oldPlot));
 			return;
 		}
 		
-		direction = faceto;
-		
-		// updateMap(event.getPlayer());
+		// updateMap(event.getPlayer()); something like that
 		
 	}
 

@@ -9,7 +9,8 @@ import com.intellectualcrafters.plot.object.Plot;
 public class PlayerEnterPlotAbsEvent extends PlayerEvent {
 
 	private static final HandlerList handlers = new HandlerList();
-	private final Plot plot;
+	private final Plot toPlot;
+	private final Plot fromPlot;
 	
 	/**
 	 * Called when a player leaves a plot.
@@ -17,9 +18,10 @@ public class PlayerEnterPlotAbsEvent extends PlayerEvent {
 	 * @param player Player that entered the plot
 	 * @param plot   Plot that was entered
 	 */
-	public PlayerEnterPlotAbsEvent(Player player, Plot plot) {
+	public PlayerEnterPlotAbsEvent(Player player, Plot toPlot, Plot fromPlot) {
 		super(player);
-		this.plot = plot;
+		this.toPlot = toPlot;
+		this.fromPlot = fromPlot;
 	}
 
 	public static HandlerList getHandlerList() {
@@ -31,8 +33,12 @@ public class PlayerEnterPlotAbsEvent extends PlayerEvent {
 	 *
 	 * @return Plot
 	 */
-	public Plot getPlot() {
-		return this.plot;
+	public Plot getToPlot() {
+		return this.toPlot;
+	}
+	
+	public Plot getFromPlot() {
+		return this.fromPlot;
 	}
 	
 	public HandlerList getHandlers() {

@@ -61,7 +61,7 @@ public class MapCommand extends SubCommand {
 			}
 			
 			player.sendMessage(prefix + "Radius set to " + String.valueOf(arg));
-			PlotMapExtension.radius = arg;
+			player.setMeta("plot-map-radius", arg);
 			
 			if (plotMap.getUserMap().get(player.getName())) {
 				
@@ -74,7 +74,7 @@ public class MapCommand extends SubCommand {
 			
 		} else {
 			
-			PlotMapExtension.radius = 3;
+			player.setMeta("plot-map-radius", 3);
 			
 			// random notifs
 			double random = (Math.random() * 10);
