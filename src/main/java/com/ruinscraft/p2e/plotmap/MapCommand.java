@@ -74,8 +74,6 @@ public class MapCommand extends SubCommand {
 			
 		} else {
 			
-			player.setMeta("plot-map-radius", 3);
-			
 			// random notifs
 			double random = (Math.random() * 10);
 			if (random > 3 && random < 3.4) {

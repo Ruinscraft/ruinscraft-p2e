@@ -1,7 +1,5 @@
 package com.ruinscraft.p2e.plotborder;
 
-import org.bukkit.entity.Player;
-
 import com.intellectualcrafters.plot.commands.CommandCategory;
 import com.intellectualcrafters.plot.commands.RequiredType;
 import com.intellectualcrafters.plot.commands.SubCommand;
@@ -18,20 +16,18 @@ import com.plotsquared.general.commands.CommandDeclaration;
 
 public class BorderCommand extends SubCommand {
 
-	public boolean onCommand(PlotPlayer sender, String[] args) {
+	public boolean onCommand(PlotPlayer plotPlayer, String[] args) {
 		
-		if (!(sender instanceof Player)) {
+		if (!(plotPlayer instanceof PlotPlayer)) {
 			return false;
 		}
 		
-		Player player = (Player) sender;
-		
-		if (PlotBorderExtension.getActivePlayers().contains(player.getUniqueId())) {
-			PlotBorderExtension.getActivePlayers().remove(player.getUniqueId());
+		if (PlotBorderExtension.getActivePlayers().contains(plotPlayer.getUUID())) {
+			PlotBorderExtension.getActivePlayers().remove(plotPlayer.getUUID());
 			return false;
 		}
 		
-		PlotBorderExtension.getActivePlayers().add(player.getUniqueId());
+		PlotBorderExtension.getActivePlayers().add(plotPlayer.getUUID());
 		
 		return true;
 		

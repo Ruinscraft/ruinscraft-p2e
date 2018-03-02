@@ -6,7 +6,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.ruinscraft.p2e.P2Extension;
 import com.ruinscraft.p2e.P2Extensions;
-import com.ruinscraft.p2e.P2Util;
 
 public class TimedClaimsExtension implements P2Extension {
 	
@@ -19,16 +18,13 @@ public class TimedClaimsExtension implements P2Extension {
 	@Override
 	public boolean enable() {
 		
+		instance = P2Extensions.getInstance();
 		timedClaimsExtension = this;
-
-		P2Util.loadResource("config.yml");
-		P2Util.loadResource("messages.yml");
-
-		menuHandler = new MenuHandler(instance);
 
 		command = new NextCommand();
 
 		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(new MenuHandler(), instance);
 		pm.registerEvents(new PlayerJoinListener(), instance);
 		
 		new BukkitRunnable() {
@@ -56,7 +52,7 @@ public class TimedClaimsExtension implements P2Extension {
 	
 	@Override
 	public String getName() {
-		return "timed-claims";
+		return "Timed-Claims";
 	}
 	
 	@Override
@@ -64,18 +60,12 @@ public class TimedClaimsExtension implements P2Extension {
 		return command;
 	}
 
-	public static void reloadPlugin() {
-		
-		P2Util.log("Reloading plugin..");
-
-		menuHandler = new MenuHandler(instance);
-
-		P2Util.log("Plugin successfully reloaded.");
-		
+	public static TimedClaimsExtension getTimedClaims() { 
+		return timedClaimsExtension;
 	}
 
-	public static TimedClaimsExtension getTimedClaims() { return timedClaimsExtension; }
-
-	public static MenuHandler getMenuHandler() { return menuHandler; }
+	public static MenuHandler getMenuHandler() { 
+		return menuHandler;
+	}
 	
 }

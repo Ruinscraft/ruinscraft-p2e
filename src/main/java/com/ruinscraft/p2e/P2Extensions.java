@@ -3,6 +3,7 @@ package com.ruinscraft.p2e;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ruinscraft.p2e.biomeauto.BiomeAutoExtension;
@@ -24,6 +25,12 @@ public class P2Extensions extends JavaPlugin {
 		
 		saveDefaultConfig();
 		
+		if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared")) {
+			getLogger().info("PlotSquared found!");
+		} else {
+			getLogger().info("PlotSquared not found, disabling.");
+		}
+		
 		registerExtension(new PlotMapExtension());
 		registerExtension(new PlotBorderExtension());
 		registerExtension(new BiomeAutoExtension());
@@ -37,7 +44,6 @@ public class P2Extensions extends JavaPlugin {
 		for (P2Extension extension : extensions) {
 			extension.disable();
 		}
-		extensions.clear();
 		p2Extensions = null;
 		
 	}
@@ -47,9 +53,9 @@ public class P2Extensions extends JavaPlugin {
 		if (isEnabled(extension.getName())) {
 			if (extension.enable()) {
 				extensions.add(extension);
-				getLogger().info(extension.getName() + " enabled!"); 
+				getLogger().info(extension.getName() + " Extension enabled!"); 
 			} else {
-				getLogger().info(extension.getName() + " disabled!"); 
+				getLogger().info(extension.getName() + " Extension disabled!"); 
 			}
 		}
 		
@@ -59,7 +65,7 @@ public class P2Extensions extends JavaPlugin {
 		
 		if (extension.disable()) {
 			extensions.remove(extension);
-			getLogger().info(extension.getName() + " enabled!"); 
+			getLogger().info(extension.getName() + " Extension disabled!"); 
 		}
 		
 	}

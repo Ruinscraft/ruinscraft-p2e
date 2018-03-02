@@ -45,7 +45,7 @@ public class PlotBorderExtension implements P2Extension {
 	}
 	
 	public String getName() {
-		return "Biome-Auto";
+		return "Plot-Border";
 	}
 	
 	public SubCommand getP2SubCommand() {

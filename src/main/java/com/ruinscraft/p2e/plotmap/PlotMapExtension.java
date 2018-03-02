@@ -80,7 +80,7 @@ public class PlotMapExtension implements Listener, P2Extension {
 	}
 	
 	public String getName() {
-		return "plot-map";
+		return "Plot-Map";
 	}
 	
 	public SubCommand getP2SubCommand() {
@@ -145,6 +145,11 @@ public class PlotMapExtension implements Listener, P2Extension {
 			PlotArea area = player.getPlotAreaAbs();
 			id = area.getPlotAbs(loc).getId();
 
+		}
+		
+		// set default radius if non-existent
+		if (player.getMeta("plot-map-radius") == null) {
+			player.setMeta("plot-map-radius", 3);
 		}
 
 		// coords of the plot

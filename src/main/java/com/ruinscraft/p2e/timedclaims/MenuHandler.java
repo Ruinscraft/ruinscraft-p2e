@@ -8,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.intellectualcrafters.plot.object.PlotPlayer;
@@ -26,10 +25,6 @@ public class MenuHandler implements Listener {
 	
 	private static HashMap<UUID, RewardsMenu> rewardsMenus = new HashMap<UUID, RewardsMenu>();
 	private static ArrayList<UUID> runningTasks = new ArrayList<UUID>();
-
-	public MenuHandler(Plugin plugin) {
-		Bukkit.getPluginManager().registerEvents(this, plugin);
-    }
 
 	public static void addRewardMenu(PlotPlayer player, RewardsMenu menu) { 
 		rewardsMenus.put(player.getUUID(), menu); 
@@ -177,6 +172,6 @@ public class MenuHandler implements Listener {
 			runningTasks.remove(player.getUniqueId());
 		}
 		
-		
 	}
+	
 }
