@@ -81,11 +81,12 @@ public class MenuHandler implements Listener {
 
 		if (result <= 0) {
 			return ("Processing...");
-		} else 
+		} else {
 			return TimeUnit.MILLISECONDS.toDays(result) + "d " + String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(result) - TimeUnit.DAYS
 					.toHours(TimeUnit.MILLISECONDS.toDays(result)), TimeUnit.MILLISECONDS.toMinutes(result) - TimeUnit.HOURS
 					.toMinutes(TimeUnit.MILLISECONDS.toHours(result)), TimeUnit.MILLISECONDS.toSeconds(result) - TimeUnit.MINUTES
 					.toSeconds(TimeUnit.MILLISECONDS.toMinutes(result)));
+		}
 		
 	}
 	
@@ -113,7 +114,6 @@ public class MenuHandler implements Listener {
 					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd.replace("{player}", player
 								.getName()).replace("{uuid}", player.getUUID().toString()));
 				}
-				
 				
 				player.sendMessage("{prefix} You have earned 1 new claim for your playtime! &l/p auto &r&7or &l/p claim"
 						.replace("{prefix}", P2Util.prefix));

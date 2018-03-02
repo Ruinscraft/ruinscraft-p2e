@@ -20,11 +20,12 @@ public class TimedClaimsExtension implements P2Extension {
 		
 		instance = P2Extensions.getInstance();
 		timedClaimsExtension = this;
+		menuHandler = new MenuHandler();
 
 		command = new NextCommand();
 
 		PluginManager pm = Bukkit.getPluginManager();
-		pm.registerEvents(new MenuHandler(), instance);
+		pm.registerEvents(menuHandler, instance);
 		pm.registerEvents(new PlayerJoinListener(), instance);
 		
 		new BukkitRunnable() {
@@ -35,7 +36,7 @@ public class TimedClaimsExtension implements P2Extension {
 				
 			}
 			
-		}.runTaskTimerAsynchronously(instance, 0L, 1200L);
+		}.runTaskTimer(instance, 0L, 1200L);
 		
 		return true;
 		
